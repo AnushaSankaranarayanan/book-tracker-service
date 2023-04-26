@@ -1,0 +1,318 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "description": "OpenAPI - Book Tracker Service",
+    "title": "book-tracker-service",
+    "version": "1.0.0",
+    "contact": {
+      "name": "API Support",
+      "url": "https://github.com/support",
+      "email": "anushasankaranarayanan@github.com"
+    }
+  },
+  "paths": {
+    "/bookservice/api/v1/book": {
+      "post": {
+        "summary": "This API creates new book (resource) in database. ID(ISDN) is supplied in the request payload",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Book"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Book added successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SimpleResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SimpleResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SimpleResponse"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "summary": "This API updates a book in database",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Book"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successfully acknowledgment from database",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SimpleResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SimpleResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Book with id not found in database",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SimpleResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "internal server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SimpleResponse"
+                }
+              }
+            }
+          }
+        }
+      },
+      "get": {
+        "summary": "This API lists all books from database",
+        "responses": {
+          "200": {
+            "description": "Book list from DB",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BooksResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "internal server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SimpleResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/bookservice/api/v1/book/{id}": {
+      "get": {
+        "summary": "This API gets a book with the id(ISBN) from database",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "description": "id of the book that need to be updated",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "example": "978-1-60309-329-3"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful retrieval from database",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BookByIdResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found in database",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SimpleResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "internal server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SimpleResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Book": {
+        "type": "object",
+        "required": [
+          "isdn",
+          "title",
+          "author",
+          "genre"
+        ],
+        "properties": {
+          "isdn": {
+            "type": "string",
+            "example": "978-1-60309-469-6"
+          },
+          "title": {
+            "type": "string",
+            "example": "Doughnuts and Doom"
+          },
+          "author": {
+            "type": "string",
+            "example": "Alan Moore"
+          },
+          "genre": {
+            "type": "string",
+            "example": "Thriller"
+          },
+          "status": {
+            "type": "string",
+            "example": "IN-PROGRESS, UNREAD, COMPLETED"
+          },
+          "bookmark": {
+            "description": "Page number which is bookmarked by the user",
+            "type": "number",
+            "example": 100
+          },
+          "created": {
+            "type": "integer",
+            "description": "created timestamp(epoch)",
+            "example": 1637071617
+          },
+          "updated": {
+            "type": "integer",
+            "description": "updated timestamp(epoch)",
+            "example": 1637071617
+          },
+          "created_by": {
+            "type": "string",
+            "example": "SYSTEM"
+          },
+          "updated_by": {
+            "type": "string",
+            "example": "SYSTEM"
+          },
+          "started": {
+            "type": "integer",
+            "description": "started timestamp(epoch)",
+            "example": 1637071617
+          },
+          "finished": {
+            "type": "integer",
+            "description": "book finish timestamp(epoch)",
+            "example": 1637071617
+          },
+          "active": {
+            "description": "current status of the book. If the book would be deleted, this would be set to false in the DB",
+            "type": "string",
+            "example": "true"
+          }
+        }
+      },
+      "SimpleResponse": {
+        "type": "object",
+        "properties": {
+          "code": {
+            "type": "number",
+            "format": "int64"
+          },
+          "status": {
+            "type": "string"
+          },
+          "message": {
+            "type": "string"
+          }
+        }
+      },
+      "BookByIdResponse": {
+        "type": "object",
+        "properties": {
+          "code": {
+            "type": "number",
+            "format": "int64"
+          },
+          "status": {
+            "type": "string"
+          },
+          "message": {
+            "type": "string"
+          },
+          "Book": {
+            "$ref": "#/components/schemas/Book"
+          }
+        }
+      },
+      "BooksResponse": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/SimpleResponse"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "books": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/Book"
+                }
+              },
+              "count": {
+                "type": "number"
+              }
+            }
+          }
+        ]
+      }
+    }
+  }
+}
