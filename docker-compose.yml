@@ -1,0 +1,15 @@
+version: "2"
+services:
+  book-tracker-service:
+    build: .
+    environment:
+      - LOG_LEVEL=INFO
+      - SERVER_PORT=9000
+      - NAME=book-tracker-service
+      - COUCHBASE_HOST=<hostname>
+      - COUCHBASE_BUCKET=reading-list
+      - COUCHBASE_USER=<username>
+      - COUCHBASE_PASSWORD=<password>
+      - ENABLE_DB_VERBOSE_LOGGING=false
+    ports:
+      - ${SERVER_PORT}:${SERVER_PORT}

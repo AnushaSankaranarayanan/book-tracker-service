@@ -93,6 +93,9 @@ godoc -http=:6060
 Open godocs [here](http://localhost:6060/pkg/github.com/anushasankaranarayanan/book-tracker-service/)
 
 ## Running the service locally
+
+*Note : Please have a running couchbase server before proceeding to the below section. Refer to section Couchbase Prerequisites for the initial setup.
+
 ### Non containerized
 Create .env file and set the values for below properties. (Sample values given below)
 ```
@@ -112,6 +115,54 @@ cd cmd/microservice
 
 ```
 Run `go run -tags real main.go` . Issue requests to : `http://localhost:9000`. Refer to `http://localhost:9000/api/v1/openapi` for the list of endpoints supported.
+
+### Docker compose
+#### Install [Docker](https://www.docker.com/) on your system.
+
+* [Install instructions](https://docs.docker.com/installation/mac/) for Mac OS X
+* [Install instructions](https://docs.docker.com/installation/ubuntulinux/) for Ubuntu Linux
+* [Install instructions](https://docs.docker.com/installation/) for other platforms
+
+#### Install [Docker Compose](http://docs.docker.com/compose/) on your system.
+
+* Python/pip: `sudo pip install -U docker-compose`
+* Other: ``curl -L https://github.com/docker/compose/releases/download/1.1.0/docker-compose-`uname -s`-`uname -m` > /usr/local/bin/docker-compose; chmod +x /usr/local/bin/docker-compose``
+
+#### Run `make build` command on the project root directory.
+
+#### Edit `docker-compose.yml` with appropriate environment variables.
+
+#### Run the below command to bring up the service.
+```
+ docker-compose up --build
+```
+#### Once the application is up - issue requests to : `http://localhost:9000`.
+
+#### To stop the containers
+ ```
+docker-compose stop
+```
+### Kubernetes cluster
+
+#### Ensure that a kubernetes cluster is up and running.For minikube, please refer [here](https://minikube.sigs.k8s.io/docs/start/)
+
+####  Ensure that `kubectl` has access to the running cluster.
+
+####  Run the below command
+```
+cd kube
+./start.sh
+```
+
+The service should be up and running.Get the URL of the service by running:
+```
+minikube service book-tracker-service --url
+```
+and issue requests
+#### To stop and remove the deployments from kubernetes , run
+```
+/kube/clean-up.sh
+```
 
 ## Sample responses
 ```
@@ -292,7 +343,18 @@ curl --location --request PUT 'http://localhost:9000/api/v1/book' \
 * Logrus is being used for logging. This could be moved ad used as a middleware to prevent initializing in multiple places
 * sonar.properties file could be included
 * List endpoint is not paginated . It only returns a count . This could be modified to accept limit parameter to aid in pagination
+* Books cannot be exported to the pantry basket using this service since there is no equivalent library for Go
+* Environment Variable COUCHBASE_PASSWORD is set as plain text, this SHOULD be moved to a secret.
 
 ## Feature Improvements 
 * The data model has a field called "bookmark" which can be used to track the progress of the user. It can be set when calling the UPDATE endpoint. The user could be directly taken to the page when he/she selects the book from the UI.
 * The Front end can use the timestamps(start/end) returned from the LIST endpoint to show a dashboard / graph to the user showing weekly reading times,
+* The service supports multi tenancy by default by leveraging couchbase scopes and collections. [Documentation here](https://docs.couchbase.com/server/current/learn/data/scopes-and-collections.html), so in the future reading lists for a family can be added without much code changes
+## Couchbase Prerequisites
+* Create a bucket called `reading-list` . [Refer here for more details](https://docs.couchbase.com/server/current/manage/manage-buckets/create-bucket.html)
+* Run the below queries in the couchbase server for the initial setup:
+```
+CREATE COLLECTION `reading-list`.`_default`.book
+CREATE PRIMARY INDEX primary_index_book on `reading-list`.`_default`.book;
+
+```
