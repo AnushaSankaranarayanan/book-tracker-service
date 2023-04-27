@@ -14,15 +14,15 @@ type Book struct {
 	Title     string `json:"title" binding:"required"`
 	Author    string `json:"author" binding:"required"`
 	Genre     string `json:"genre" binding:"required"`
-	Status    string `json:"status,omitempty"`
-	Bookmark  int    `json:"bookmark,omitempty"`
-	Created   int64  `json:"created,omitempty"`
-	Updated   int64  `json:"updated,omitempty"`
-	CreatedBy string `json:"created_by,omitempty"`
-	UpdatedBy string `json:"updated_by,omitempty"`
-	Started   int64  `json:"started,omitempty"`
-	Finished  int64  `json:"finished,omitempty"`
-	Active    string `json:"active,omitempty"`
+	Status    string `json:"status,omitempty" yaml:"status,omitempty"`
+	Bookmark  int    `json:"bookmark,omitempty" yaml:"bookmark,omitempty"`
+	Created   int64  `json:"created,omitempty" yaml:"created,omitempty"`
+	Updated   int64  `json:"updated,omitempty" yaml:"updated,omitempty"`
+	CreatedBy string `json:"created_by,omitempty" yaml:"created_by,omitempty"`
+	UpdatedBy string `json:"updated_by,omitempty" yaml:"updated_by,omitempty"`
+	Started   int64  `json:"started,omitempty" yaml:"started,omitempty"`
+	Finished  int64  `json:"finished,omitempty" yaml:"finished,omitempty"`
+	Active    string `json:"active,omitempty" yaml:"active,omitempty"`
 }
 
 func (b *Book) SetTrackingDetails() {

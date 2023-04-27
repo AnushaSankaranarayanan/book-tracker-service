@@ -198,6 +198,33 @@
         }
       }
     },
+    "/bookservice/api/v1/book/export": {
+      "get": {
+        "summary": "This API exports the books in yaml file and attaches in the response",
+        "responses": {
+          "200": {
+            "description": "Successful retrieval from database and export to yaml",
+            "content": {
+              "application/x-yaml": {
+                "schema": {
+                  "$ref": "#/components/schemas/Books"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "internal server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SimpleResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/bookservice/api/v1/genre": {
       "get": {
         "summary": "This API gets genres and book associated with each genre",
@@ -294,6 +321,17 @@
             "description": "current status of the book. If the book would be deleted, this would be set to false in the DB",
             "type": "string",
             "example": "true"
+          }
+        }
+      },
+      "Books": {
+        "type": "object",
+        "properties": {
+          "books": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Book"
+            }
           }
         }
       },

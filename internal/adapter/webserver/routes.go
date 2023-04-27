@@ -18,7 +18,8 @@ func (s *Server) Routes() error {
 		GET("/book/:id", s.GetBook).
 		GET("/book", s.ListBooks).
 		PUT("/book", s.UpdateBook).
-		GET("/genre", s.GroupBooksByGenre)
+		GET("/genre", s.GroupBooksByGenre).
+		GET("/book/export", s.ExportBooks)
 
 	r.Group("/api/v1/probes").
 		GET("/liveness", probes.Liveness)

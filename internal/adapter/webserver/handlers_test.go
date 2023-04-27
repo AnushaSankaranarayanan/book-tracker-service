@@ -25,14 +25,16 @@ const (
 	getBookHandler            = "GetBook"
 	updateBookHandler         = "UpdateBook"
 	groupBooksByGenreHandler  = "GroupBooksByGenre"
+	exportBooksHandler        = "ExportBooks"
 	bookJsonFile              = "book.json"
 	bookInvalidStatusJsonFile = "book-invalid-status.json"
 	bookMissingFieldJsonFile  = "book-missing-mandatory-field.json"
 )
 
 var (
-	bookURL  = "/api/v1/book"
-	genreURL = "/api/v1/genre"
+	bookURL       = "/api/v1/book"
+	bookExportURL = "/api/v1/book/export"
+	genreURL      = "/api/v1/genre"
 )
 
 func TestHandlers(t *testing.T) {
@@ -216,6 +218,26 @@ func TestHandlers(t *testing.T) {
 			groupBooksByGenreHandler,
 			genreURL,
 		},
+		{
+			"ExportBooks: should fail(force DB error)",
+			http.MethodGet,
+			"query-error",
+			"failed to export books.Refer to logs for more details",
+			http.StatusInternalServerError,
+			"",
+			exportBooksHandler,
+			bookExportURL,
+		},
+		{
+			"ExportBooks: should pass",
+			http.MethodGet,
+			"",
+			"",
+			http.StatusOK,
+			"",
+			exportBooksHandler,
+			bookExportURL,
+		},
 	}
 
 	for _, test := range crulTests {
@@ -244,6 +266,8 @@ func TestHandlers(t *testing.T) {
 				server.ListBooks(c)
 			case groupBooksByGenreHandler:
 				server.GroupBooksByGenre(c)
+			case exportBooksHandler:
+				server.ExportBooks(c)
 			}
 
 			//assertions

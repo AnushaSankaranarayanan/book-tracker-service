@@ -2,18 +2,24 @@ package webserver
 
 import (
 	"fmt"
+	"net/http"
+	"os"
+	"strings"
+	"sync"
+
 	"github.com/anushasankaranarayanan/book-tracker-service/internal/consts"
 	"github.com/anushasankaranarayanan/book-tracker-service/internal/entity"
+
 	"github.com/gin-gonic/gin"
 	"github.com/sirupsen/logrus"
-	"net/http"
-	"strings"
+	"gopkg.in/yaml.v3"
 )
 
 const (
 	unreadStatus     = "UNREAD"
 	inProgressStatus = "IN PROGRESS"
 	finishedStatus   = "FINISHED"
+	fileLocation     = "/tmp/test.yaml"
 )
 
 var l = logrus.StandardLogger()
@@ -111,6 +117,31 @@ func (s *Server) GroupBooksByGenre(c *gin.Context) {
 	c.JSON(http.StatusOK, entity.NewGroupByGenreResponse(http.StatusOK, "books retrieval successful", genres))
 }
 
+// ExportBooks - exports the books as yaml file. Using the sync package here to guard the critical section of writing to file
+func (s *Server) ExportBooks(c *gin.Context) {
+	books, err := s.Services.BookTracker.ListBooks("")
+	if err != nil {
+		l.Errorf("ExportBooks error %s", err.Error())
+		c.JSON(http.StatusInternalServerError, entity.NewGenericResponse(http.StatusInternalServerError, "failed to export books.Refer to logs for more details"))
+		return
+	}
+	yamlData, _ := yaml.Marshal(books)
+
+	var mu sync.Mutex
+	mu.Lock()
+
+	err = os.WriteFile(fileLocation, yamlData, 0644)
+	if err != nil {
+		l.Errorf("ExportBooks error creating yaml file %s", err.Error())
+		c.JSON(http.StatusInternalServerError, entity.NewGenericResponse(http.StatusInternalServerError, "failed to write books to file.Refer to logs for more details"))
+		return
+	}
+	c.FileAttachment(fileLocation, "test.yaml")
+	os.Remove(fileLocation)
+
+	mu.Unlock()
+
+}
 func sortKeyValid(sortKey string) bool {
 	return sortKey == "" || strings.ToLower(sortKey) == consts.Title || strings.ToLower(sortKey) == consts.Status
 }

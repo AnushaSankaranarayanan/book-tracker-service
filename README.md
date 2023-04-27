@@ -7,6 +7,7 @@ A golang based microservice that manages the reading activity of users that prov
 - Fetch a specific book
 - Delete the book(it is a soft delete - meaning the Front End would call the Update endpoint with active="false")
 - List Genres and the books associated with each genre
+- Export the books and attaches the yaml file to the response
 
 ## Structure
 The structure of the project is following the architecture proposed by Robert C. Martin - [The Clean Architecture](https://blog.cleancoder.com/uncle-bob/2012/08/13/the-clean-architecture.html)
@@ -542,6 +543,76 @@ curl --location 'http://localhost:9000/api/v1/genre/'
         }
     ]
 }
+
+# Export books
+curl --location 'http://localhost:9000/api/v1/book/export/'
+- isbn: 978-1-60309-038-4
+  title: Essex County
+  author: Jeff Lemire
+  genre: Thriller
+  created: 1682596903
+  updated: 1682596903
+  created_by: SYSTEM
+  updated_by: SYSTEM
+- isbn: 978-1-60309-084-1
+  title: Does Something
+  author: James Kochalka
+  genre: Thriller
+  created: 1682596934
+  updated: 1682596934
+  created_by: SYSTEM
+  updated_by: SYSTEM
+- isbn: 978-1-60309-329-3
+  title: The Tempest
+  author: Alan Moore
+  genre: Mystery
+  created: 1682596978
+  updated: 1682596978
+  created_by: SYSTEM
+  updated_by: SYSTEM
+- isbn: 978-1-60309-469-6
+  title: From Hell
+  author: Eddie Campbell
+  genre: Horror
+  status: IN PROGRESS
+  updated: 1682588775
+  active: "true"
+- isbn: 978-1-60309-504-4
+  title: Glork Patrol Takes a Bath
+  author: James Kochalka
+  genre: Mystery
+  created: 1682597000
+  updated: 1682597000
+  created_by: SYSTEM
+  updated_by: SYSTEM
+- isbn: 978-1-60309-513-6
+  title: Doughnuts and Doom
+  author: Balazs Lorinczi
+  genre: Mystery
+  created: 1682596959
+  updated: 1682596959
+  created_by: SYSTEM
+  updated_by: SYSTEM
+- isbn: 978-1-60309-527-3
+  title: But You Have Friends
+  author: Emilia McKenzie
+  genre: Adventure
+  status: FINISHED
+  created: 1682585792
+  updated: 1682588831
+  created_by: SYSTEM
+  updated_by: SYSTEM
+  active: "true"
+- isbn: 9978-1-60309-481-8
+  title: Parenthesis
+  author: Lodie Durand
+  genre: Horror
+  created: 1682596881
+  updated: 1682596881
+  created_by: SYSTEM
+  updated_by: SYSTEM
+
+
 ```
 ## Known caveats
 * Swagger assets are included in the service. Moving that to a common module would be a sensible choice
