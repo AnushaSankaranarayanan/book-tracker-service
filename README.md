@@ -561,7 +561,7 @@ curl --location 'http://localhost:9000/api/v1/genre/'
 * The data model has a field called "bookmark" which can be used to track the progress of the user. It can be set when calling the UPDATE endpoint. The user could be directly taken to the page when he/she selects the book from the UI.
 * The Front end can use the timestamps(start/end) returned from the LIST endpoint to show a dashboard / graph to the user showing weekly reading times,
 * The Front end can use the GroupBooksByGenre endpoint to show to the user , different genres and the books associated with each genre
-* The service supports multi tenancy by default by leveraging couchbase scopes and collections[Documentation here](https://docs.couchbase.com/server/current/learn/data/scopes-and-collections.html).So in the future reading lists for a family can be added without much code changes
+* The service supports multi tenancy by default by leveraging couchbase scopes and collections [Documentation here](https://docs.couchbase.com/server/current/learn/data/scopes-and-collections.html).So in the future reading lists for a family can be added without much code changes
 
 ## Couchbase Prerequisites
 * Create a bucket called `reading-list` in the couchbase cluster . [Refer here for more details](https://docs.couchbase.com/server/current/manage/manage-buckets/create-bucket.html)

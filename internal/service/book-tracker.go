@@ -92,26 +92,8 @@ func (svc *bookTracker) GroupBooksByGenre() ([]entity.BooksByGenre, error) {
 	if err != nil {
 		return nil, err
 	}
-
-	var genres []entity.BooksByGenre
-	previousGenre := ""
-
 	sortBooks(consts.Genre, books)
-	//for each book's genre, get all books with that genre from the (same)array
-	for _, book := range books {
-		// Add books only for new genres
-		if previousGenre != book.Genre {
-			booksForGenre := getBooksForGenre(book.Genre, books)
-
-			item := entity.BooksByGenre{
-				Genre: book.Genre,
-				Books: booksForGenre,
-				Count: len(booksForGenre),
-			}
-			genres = append(genres, item)
-		}
-		previousGenre = book.Genre
-	}
+	genres := groupByGenre(books)
 	return genres, nil
 }
 
@@ -131,6 +113,23 @@ func sortBooks(sortKey string, books []entity.Book) {
 			return books[i].Genre < books[j].Genre
 		})
 	}
+}
+
+func groupByGenre(books []entity.Book) []entity.BooksByGenre {
+	var genres []entity.BooksByGenre
+	previousGenre := ""
+
+	//for each book's genre, get all books with that genre from the (same)array
+	for _, book := range books {
+		// Add books only for new genres
+		if previousGenre != book.Genre {
+			booksForGenre := getBooksForGenre(book.Genre, books)
+			item := entity.BooksByGenre{Genre: book.Genre, Books: booksForGenre, Count: len(booksForGenre)}
+			genres = append(genres, item)
+		}
+		previousGenre = book.Genre
+	}
+	return genres
 }
 
 func getBooksForGenre(genre string, books []entity.Book) []entity.Book {

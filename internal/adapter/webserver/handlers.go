@@ -18,6 +18,7 @@ const (
 
 var l = logrus.StandardLogger()
 
+// AddBook - checks incoming request and add the book to DB
 func (s *Server) AddBook(c *gin.Context) {
 	var book entity.Book
 
@@ -37,6 +38,7 @@ func (s *Server) AddBook(c *gin.Context) {
 	c.JSON(http.StatusOK, entity.NewGenericResponse(http.StatusOK, "book creation successful"))
 }
 
+// ListBooks - checks incoming parameters(sortKey) and fetches books from DB
 func (s *Server) ListBooks(c *gin.Context) {
 	sortKey := c.Query(consts.SortKey)
 
@@ -57,6 +59,7 @@ func (s *Server) ListBooks(c *gin.Context) {
 	c.JSON(http.StatusOK, entity.NewBookResponse(http.StatusOK, "books retrieval successful", nil, books))
 }
 
+// GetBook - gets the book with id from the DB(ISBN)
 func (s *Server) GetBook(c *gin.Context) {
 	bookId, _ := c.Params.Get("id")
 	book, err := s.Services.BookTracker.GetBook(bookId)
@@ -69,6 +72,7 @@ func (s *Server) GetBook(c *gin.Context) {
 	c.JSON(http.StatusOK, entity.NewBookResponse(http.StatusOK, "book retrieval successful", book, nil))
 }
 
+// UpdateBook - checks incoming request and updates the book to DB
 func (s *Server) UpdateBook(c *gin.Context) {
 	var book entity.Book
 
@@ -95,6 +99,7 @@ func (s *Server) UpdateBook(c *gin.Context) {
 	c.JSON(http.StatusOK, entity.NewGenericResponse(http.StatusOK, "book updated successfully"))
 }
 
+// GroupBooksByGenre - lists the genres and books associated with each genre
 func (s *Server) GroupBooksByGenre(c *gin.Context) {
 	genres, err := s.Services.BookTracker.GroupBooksByGenre()
 	if err != nil {
