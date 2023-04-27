@@ -3,7 +3,7 @@
 A golang based microservice that manages the reading activity of users that provides the below functionalities :
 - Add a book to the reading list
 - Update the book(Example: Set the status to IN PROGRESS, Bookmark a page)
-- List books
+- List books(sorted by status or title)
 - Fetch a specific book
 - Delete the book(it is a soft delete - meaning the Front End would call the Update endpoint with active="false")
 
@@ -269,6 +269,38 @@ curl --location 'http://localhost:9000/api/v1/book/'
         }
     ]
 }
+# List books - sorted by title
+curl --location 'http://localhost:9000/api/v1/book?sort=title'
+
+{
+    "code": 200,
+    "status": "OK",
+    "message": "books retrieval successful",
+    "count": 2,
+    "books": [
+        {
+            "isbn": "978-1-60309-527-3",
+            "title": "But You Have Friends",
+            "author": "Emilia McKenzie",
+            "genre": "Adventure",
+            "status": "FINISHED",
+            "created": 1682585792,
+            "updated": 1682588831,
+            "created_by": "SYSTEM",
+            "updated_by": "SYSTEM",
+            "active": "true"
+        },
+        {
+            "isbn": "978-1-60309-469-6",
+            "title": "From Hell",
+            "author": "Eddie Campbell",
+            "genre": "Horror",
+            "status": "IN PROGRESS",
+            "updated": 1682588775,
+            "active": "true"
+        }
+    ]
+}
 
 # Get a book - error scenario(invalid id)
 
@@ -345,13 +377,14 @@ curl --location --request PUT 'http://localhost:9000/api/v1/book' \
 * List endpoint is not paginated . It only returns a count . This could be modified to accept limit parameter to aid in pagination
 * Books cannot be exported to the pantry basket using this service since there is no equivalent library for Go
 * Environment Variable COUCHBASE_PASSWORD is set as plain text, this SHOULD be moved to a secret.
+* Sort is on ascending order. This could be driven by a query parameter. The sorting is done at the service rather than database queries(as sort queries can be a bit expensive) 
 
 ## Feature Improvements 
 * The data model has a field called "bookmark" which can be used to track the progress of the user. It can be set when calling the UPDATE endpoint. The user could be directly taken to the page when he/she selects the book from the UI.
 * The Front end can use the timestamps(start/end) returned from the LIST endpoint to show a dashboard / graph to the user showing weekly reading times,
-* The service supports multi tenancy by default by leveraging couchbase scopes and collections. [Documentation here](https://docs.couchbase.com/server/current/learn/data/scopes-and-collections.html), so in the future reading lists for a family can be added without much code changes
+* The service supports multi tenancy by default by leveraging couchbase scopes and collections[Documentation here](https://docs.couchbase.com/server/current/learn/data/scopes-and-collections.html).So in the future reading lists for a family can be added without much code changes
 ## Couchbase Prerequisites
-* Create a bucket called `reading-list` . [Refer here for more details](https://docs.couchbase.com/server/current/manage/manage-buckets/create-bucket.html)
+* Create a bucket called `reading-list` in the couchbase cluster . [Refer here for more details](https://docs.couchbase.com/server/current/manage/manage-buckets/create-bucket.html)
 * Run the below queries in the couchbase server for the initial setup:
 ```
 CREATE COLLECTION `reading-list`.`_default`.book

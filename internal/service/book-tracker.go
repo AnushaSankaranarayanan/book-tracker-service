@@ -2,7 +2,9 @@ package service
 
 import (
 	"fmt"
+	"github.com/anushasankaranarayanan/book-tracker-service/internal/consts"
 	"github.com/sirupsen/logrus"
+	"sort"
 	"strings"
 	"time"
 
@@ -16,9 +18,9 @@ const (
 var l = logrus.StandardLogger()
 
 type BookTracker interface {
-	AddBook(book entity.Book) error
+	AddBook(entity.Book) error
 	UpdateBook(entity.Book) error
-	ListBooks() ([]entity.Book, error)
+	ListBooks(string) ([]entity.Book, error)
 	GetBook(string) (*entity.Book, error)
 }
 
@@ -68,8 +70,13 @@ func (svc *bookTracker) UpdateBook(book entity.Book) error {
 	return nil
 }
 
-func (svc *bookTracker) ListBooks() ([]entity.Book, error) {
-	return svc.storage.GetAll()
+func (svc *bookTracker) ListBooks(sortKey string) ([]entity.Book, error) {
+	books, err := svc.storage.GetAll()
+	if err != nil {
+		return nil, err
+	}
+	sortResponse(sortKey, books)
+	return books, nil
 }
 
 func (svc *bookTracker) GetBook(id string) (*entity.Book, error) {
@@ -82,4 +89,17 @@ func (svc *bookTracker) GetBook(id string) (*entity.Book, error) {
 
 func (svc *bookTracker) GetByScope(scope string) (entity.Book, error) {
 	return svc.storage.GetByScope(scope)
+}
+
+func sortResponse(sortKey string, books []entity.Book) {
+	if strings.ToLower(sortKey) == consts.Title {
+		sort.Slice(books, func(i, j int) bool {
+			return books[i].Title < books[j].Title
+		})
+	}
+	if strings.ToLower(sortKey) == consts.Status {
+		sort.Slice(books, func(i, j int) bool {
+			return books[i].Status < books[j].Status
+		})
+	}
 }

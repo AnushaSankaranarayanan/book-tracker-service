@@ -114,6 +114,17 @@
       },
       "get": {
         "summary": "This API lists all books from database",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "sortKey",
+            "description": "SortKey(title or status)",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
         "responses": {
           "200": {
             "description": "Book list from DB",

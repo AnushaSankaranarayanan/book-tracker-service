@@ -19,13 +19,14 @@ import (
 )
 
 const (
-	testFolderPath           = "../../../tests/"
-	createBookHandler        = "CreateBook"
-	getBooksHandler          = "GetBooks"
-	getBookHandler           = "GetBook"
-	updateBookHandler        = "UpdateBook"
-	bookJsonFile             = "book.json"
-	bookMissingFieldJsonFile = "book-missing-mandatory-field.json"
+	testFolderPath            = "../../../tests/"
+	createBookHandler         = "CreateBook"
+	getBooksHandler           = "GetBooks"
+	getBookHandler            = "GetBook"
+	updateBookHandler         = "UpdateBook"
+	bookJsonFile              = "book.json"
+	bookInvalidStatusJsonFile = "book-invalid-status.json"
+	bookMissingFieldJsonFile  = "book-missing-mandatory-field.json"
 )
 
 var (
@@ -41,6 +42,7 @@ func TestHandlers(t *testing.T) {
 		statusCodeExpected int
 		requestPayload     string
 		handler            string
+		url                string
 	}{
 		{
 			"AddBook Book: missing mandatory fields",
@@ -50,6 +52,7 @@ func TestHandlers(t *testing.T) {
 			http.StatusBadRequest,
 			bookMissingFieldJsonFile,
 			createBookHandler,
+			bookURL,
 		},
 		{
 			"AddBook Book: force DB error",
@@ -59,6 +62,7 @@ func TestHandlers(t *testing.T) {
 			http.StatusInternalServerError,
 			bookJsonFile,
 			createBookHandler,
+			bookURL,
 		},
 		{
 			"AddBook Book: should pass",
@@ -68,6 +72,7 @@ func TestHandlers(t *testing.T) {
 			http.StatusOK,
 			bookJsonFile,
 			createBookHandler,
+			bookURL,
 		},
 		{
 			"UpdateBook Book: missing mandatory fields",
@@ -77,6 +82,17 @@ func TestHandlers(t *testing.T) {
 			http.StatusBadRequest,
 			bookMissingFieldJsonFile,
 			updateBookHandler,
+			bookURL,
+		},
+		{
+			"UpdateBook Book: invalid status field",
+			http.MethodPut,
+			"",
+			"Invalid status key. Expected one of UNREAD, IN PROGRESS, FINISHED",
+			http.StatusBadRequest,
+			bookInvalidStatusJsonFile,
+			updateBookHandler,
+			bookURL,
 		},
 		{
 			"UpdateBook Book: document not found error",
@@ -86,6 +102,7 @@ func TestHandlers(t *testing.T) {
 			http.StatusNotFound,
 			bookJsonFile,
 			updateBookHandler,
+			bookURL,
 		},
 		{
 			"UpdateBook Book: force DB error",
@@ -95,6 +112,7 @@ func TestHandlers(t *testing.T) {
 			http.StatusInternalServerError,
 			bookJsonFile,
 			updateBookHandler,
+			bookURL,
 		},
 		{
 			"UpdateBook Book: should pass",
@@ -104,6 +122,7 @@ func TestHandlers(t *testing.T) {
 			http.StatusOK,
 			bookJsonFile,
 			updateBookHandler,
+			bookURL,
 		},
 		{
 			"Get Book: document not found error",
@@ -113,6 +132,7 @@ func TestHandlers(t *testing.T) {
 			http.StatusNotFound,
 			"",
 			getBookHandler,
+			bookURL,
 		},
 		{
 			"Get Book: force DB error",
@@ -122,6 +142,7 @@ func TestHandlers(t *testing.T) {
 			http.StatusInternalServerError,
 			"",
 			getBookHandler,
+			bookURL,
 		},
 		{
 			"Get Book: should pass",
@@ -131,6 +152,17 @@ func TestHandlers(t *testing.T) {
 			http.StatusOK,
 			"",
 			getBookHandler,
+			bookURL,
+		},
+		{
+			"Get Books: force fail(invalid sort key)",
+			http.MethodGet,
+			"",
+			"Invalid sort key. Expected: status or title",
+			http.StatusBadRequest,
+			"",
+			getBooksHandler,
+			bookURL + "?sort=bla",
 		},
 		{
 			"Get Books: force DB error",
@@ -140,15 +172,27 @@ func TestHandlers(t *testing.T) {
 			http.StatusInternalServerError,
 			"",
 			getBooksHandler,
+			bookURL,
 		},
 		{
-			"Get Books: should pass",
+			"Get Books: should pass(sorted by title)",
 			http.MethodGet,
 			"",
 			"",
 			http.StatusOK,
 			"",
 			getBooksHandler,
+			bookURL + "?sort=title",
+		},
+		{
+			"Get Books: should pass(no sort key)",
+			http.MethodGet,
+			"",
+			"",
+			http.StatusOK,
+			"",
+			getBooksHandler,
+			bookURL,
 		},
 	}
 
@@ -158,7 +202,7 @@ func TestHandlers(t *testing.T) {
 			file, _ := os.ReadFile(testFolderPath + test.requestPayload)
 
 			rr := httptest.NewRecorder()
-			req, _ := http.NewRequest(test.httpMethod, bookURL, bytes.NewBuffer(file))
+			req, _ := http.NewRequest(test.httpMethod, test.url, bytes.NewBuffer(file))
 			c, _ := gin.CreateTestContext(rr)
 			c.Request = req
 

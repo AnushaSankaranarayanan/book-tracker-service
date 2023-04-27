@@ -1,10 +1,19 @@
 package webserver
 
 import (
+	"fmt"
+	"github.com/anushasankaranarayanan/book-tracker-service/internal/consts"
 	"github.com/anushasankaranarayanan/book-tracker-service/internal/entity"
 	"github.com/gin-gonic/gin"
 	"github.com/sirupsen/logrus"
 	"net/http"
+	"strings"
+)
+
+const (
+	unreadStatus     = "UNREAD"
+	inProgressStatus = "IN PROGRESS"
+	finishedStatus   = "FINISHED"
 )
 
 var l = logrus.StandardLogger()
@@ -24,16 +33,27 @@ func (s *Server) AddBook(c *gin.Context) {
 		c.JSON(http.StatusInternalServerError, entity.NewGenericResponse(http.StatusInternalServerError, "failed to save book.Refer to logs for more details"))
 		return
 	}
+
 	c.JSON(http.StatusOK, entity.NewGenericResponse(http.StatusOK, "book creation successful"))
 }
 
 func (s *Server) ListBooks(c *gin.Context) {
-	books, err := s.Services.BookTracker.ListBooks()
+	sortKey := c.Query(consts.SortKey)
+
+	if !sortKeyValid(sortKey) {
+		msg := fmt.Sprintf("Invalid sort key. Expected: %s or %s", consts.Status, consts.Title)
+		l.Errorf("GetBooks error: %s", msg)
+		c.JSON(http.StatusBadRequest, entity.NewGenericResponse(http.StatusBadRequest, msg))
+		return
+	}
+
+	books, err := s.Services.BookTracker.ListBooks(sortKey)
 	if err != nil {
 		l.Errorf("GetBooks error %s", err.Error())
 		c.JSON(http.StatusInternalServerError, entity.NewGenericResponse(http.StatusInternalServerError, "failed to get books.Refer to logs for more details"))
 		return
 	}
+
 	c.JSON(http.StatusOK, entity.NewBookResponse(http.StatusOK, "books retrieval successful", nil, books))
 }
 
@@ -45,6 +65,7 @@ func (s *Server) GetBook(c *gin.Context) {
 		handleErrorTypes(c, err)
 		return
 	}
+
 	c.JSON(http.StatusOK, entity.NewBookResponse(http.StatusOK, "book retrieval successful", book, nil))
 }
 
@@ -57,13 +78,32 @@ func (s *Server) UpdateBook(c *gin.Context) {
 		return
 	}
 
+	if !statusValid(book.Status) {
+		msg := fmt.Sprintf("Invalid status key. Expected one of %s, %s, %s", unreadStatus, inProgressStatus, finishedStatus)
+		l.Errorf("UpdateBook error: %s", msg)
+		c.JSON(http.StatusBadRequest, entity.NewGenericResponse(http.StatusBadRequest, msg))
+		return
+	}
+
 	err := s.Services.BookTracker.UpdateBook(book)
 	if err != nil {
 		l.Errorf("UpdateBook error %s. Request payload %+v", err.Error(), book)
 		handleErrorTypes(c, err)
 		return
 	}
+
 	c.JSON(http.StatusOK, entity.NewGenericResponse(http.StatusOK, "book updated successfully"))
+}
+
+func sortKeyValid(sortKey string) bool {
+	return sortKey == "" || strings.ToLower(sortKey) == consts.Title || strings.ToLower(sortKey) == consts.Status
+}
+
+func statusValid(status string) bool {
+	return status == "" ||
+		strings.ToUpper(status) == unreadStatus ||
+		strings.ToUpper(status) == inProgressStatus ||
+		strings.ToUpper(status) == finishedStatus
 }
 
 func handleErrorTypes(c *gin.Context, err error) {

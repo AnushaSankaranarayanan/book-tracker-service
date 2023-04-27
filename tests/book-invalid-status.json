@@ -1,0 +1,7 @@
+{
+  "isbn": "TEST-ISBN-1",
+  "title": "Test Title",
+  "author": "Test Author",
+  "genre": "Thriller",
+  "status": "bla"
+}

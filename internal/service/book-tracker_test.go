@@ -4,7 +4,7 @@ package service
 
 import (
 	"errors"
-
+	"github.com/anushasankaranarayanan/book-tracker-service/internal/consts"
 	"github.com/anushasankaranarayanan/book-tracker-service/internal/entity"
 	"github.com/anushasankaranarayanan/book-tracker-service/internal/framework/database"
 
@@ -28,12 +28,14 @@ func TestService(t *testing.T) {
 		arg           string
 		serviceMethod string
 		errorFlag     string
+		sortKey       string
 	}{
 		{
 			"CreateBook: should pass",
 			nil,
 			"",
 			createBook,
+			"",
 			"",
 		},
 		{
@@ -42,12 +44,14 @@ func TestService(t *testing.T) {
 			"",
 			createBook,
 			"error",
+			"",
 		},
 		{
 			"UpdateBook: should pass",
 			nil,
 			"",
 			updateBook,
+			"",
 			"",
 		},
 		{
@@ -56,6 +60,7 @@ func TestService(t *testing.T) {
 			"",
 			updateBook,
 			"true",
+			"",
 		},
 		{
 			"UpdateBook: should fail (update-error)",
@@ -63,6 +68,7 @@ func TestService(t *testing.T) {
 			testBook.ISBN,
 			updateBook,
 			"update-error",
+			"",
 		},
 		{
 			"GetBooks: should pass",
@@ -70,6 +76,23 @@ func TestService(t *testing.T) {
 			"",
 			getAllBooks,
 			"",
+			"",
+		},
+		{
+			"GetBooks: should pass(sorted by title)",
+			nil,
+			"",
+			getAllBooks,
+			"",
+			consts.Title,
+		},
+		{
+			"GetBooks: should pass(sorted by status",
+			nil,
+			"",
+			getAllBooks,
+			"",
+			consts.Status,
 		},
 		{
 			"GetBook: should fail(book not found)",
@@ -77,12 +100,14 @@ func TestService(t *testing.T) {
 			testBook.ISBN,
 			getBook,
 			"not-found-error",
+			"",
 		},
 		{
 			"GetBook: should pass",
 			nil,
 			testBook.ISBN,
 			getBook,
+			"",
 			"",
 		},
 		//{
@@ -106,7 +131,7 @@ func TestService(t *testing.T) {
 			case updateBook:
 				err = bookService.UpdateBook(testBook)
 			case getAllBooks:
-				_, err = bookService.ListBooks()
+				_, err = bookService.ListBooks(test.sortKey)
 			case getBook:
 				_, err = bookService.GetBook(test.arg)
 				//case getBookByScope:
