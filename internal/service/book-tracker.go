@@ -22,13 +22,13 @@ type BookTracker interface {
 	UpdateBook(entity.Book) error
 	ListBooks(string) ([]entity.Book, error)
 	GetBook(string) (*entity.Book, error)
+	GroupBooksByGenre() ([]entity.BooksByGenre, error)
 }
 
 type BookRepository interface {
 	Upsert(string, interface{}) error
 	GetAll() ([]entity.Book, error)
 	Get(string) (*entity.Book, error)
-	GetByScope(string) (entity.Book, error)
 }
 
 type bookTracker struct {
@@ -75,7 +75,7 @@ func (svc *bookTracker) ListBooks(sortKey string) ([]entity.Book, error) {
 	if err != nil {
 		return nil, err
 	}
-	sortResponse(sortKey, books)
+	sortBooks(sortKey, books)
 	return books, nil
 }
 
@@ -87,11 +87,35 @@ func (svc *bookTracker) GetBook(id string) (*entity.Book, error) {
 	return book, err
 }
 
-func (svc *bookTracker) GetByScope(scope string) (entity.Book, error) {
-	return svc.storage.GetByScope(scope)
+func (svc *bookTracker) GroupBooksByGenre() ([]entity.BooksByGenre, error) {
+	books, err := svc.ListBooks("")
+	if err != nil {
+		return nil, err
+	}
+
+	var genres []entity.BooksByGenre
+	previousGenre := ""
+
+	sortBooks(consts.Genre, books)
+	//for each book's genre, get all books with that genre from the (same)array
+	for _, book := range books {
+		// Add books only for new genres
+		if previousGenre != book.Genre {
+			booksForGenre := getBooksForGenre(book.Genre, books)
+
+			item := entity.BooksByGenre{
+				Genre: book.Genre,
+				Books: booksForGenre,
+				Count: len(booksForGenre),
+			}
+			genres = append(genres, item)
+		}
+		previousGenre = book.Genre
+	}
+	return genres, nil
 }
 
-func sortResponse(sortKey string, books []entity.Book) {
+func sortBooks(sortKey string, books []entity.Book) {
 	if strings.ToLower(sortKey) == consts.Title {
 		sort.Slice(books, func(i, j int) bool {
 			return books[i].Title < books[j].Title
@@ -102,4 +126,19 @@ func sortResponse(sortKey string, books []entity.Book) {
 			return books[i].Status < books[j].Status
 		})
 	}
+	if strings.ToLower(sortKey) == consts.Genre {
+		sort.Slice(books, func(i, j int) bool {
+			return books[i].Genre < books[j].Genre
+		})
+	}
+}
+
+func getBooksForGenre(genre string, books []entity.Book) []entity.Book {
+	var booksForGenre []entity.Book
+	for _, book := range books {
+		if book.Genre == genre {
+			booksForGenre = append(booksForGenre, book)
+		}
+	}
+	return booksForGenre
 }

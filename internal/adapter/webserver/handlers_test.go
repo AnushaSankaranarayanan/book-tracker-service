@@ -24,13 +24,15 @@ const (
 	getBooksHandler           = "GetBooks"
 	getBookHandler            = "GetBook"
 	updateBookHandler         = "UpdateBook"
+	groupBooksByGenreHandler  = "GroupBooksByGenre"
 	bookJsonFile              = "book.json"
 	bookInvalidStatusJsonFile = "book-invalid-status.json"
 	bookMissingFieldJsonFile  = "book-missing-mandatory-field.json"
 )
 
 var (
-	bookURL = "/api/v1/book"
+	bookURL  = "/api/v1/book"
+	genreURL = "/api/v1/genre"
 )
 
 func TestHandlers(t *testing.T) {
@@ -194,6 +196,26 @@ func TestHandlers(t *testing.T) {
 			getBooksHandler,
 			bookURL,
 		},
+		{
+			"GroupBooksByGenre: should fail(force DB error)",
+			http.MethodGet,
+			"query-error",
+			"failed to get books.Refer to logs for more details",
+			http.StatusInternalServerError,
+			"",
+			groupBooksByGenreHandler,
+			genreURL,
+		},
+		{
+			"GroupBooksByGenre: should pass",
+			http.MethodGet,
+			"",
+			"",
+			http.StatusOK,
+			"",
+			groupBooksByGenreHandler,
+			genreURL,
+		},
 	}
 
 	for _, test := range crulTests {
@@ -220,6 +242,8 @@ func TestHandlers(t *testing.T) {
 				server.GetBook(c)
 			case getBooksHandler:
 				server.ListBooks(c)
+			case groupBooksByGenreHandler:
+				server.GroupBooksByGenre(c)
 			}
 
 			//assertions

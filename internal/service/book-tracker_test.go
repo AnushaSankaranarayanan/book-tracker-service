@@ -12,11 +12,11 @@ import (
 )
 
 const (
-	createBook     = "AddBook"
-	updateBook     = "UpdateBook"
-	getAllBooks    = "ListBooks"
-	getBook        = "GetBook"
-	getBookByScope = "GetByScope"
+	createBook        = "AddBook"
+	updateBook        = "UpdateBook"
+	getAllBooks       = "ListBooks"
+	getBook           = "GetBook"
+	groupBooksByGenre = "GroupBooksByGenre"
 )
 
 func TestService(t *testing.T) {
@@ -87,7 +87,7 @@ func TestService(t *testing.T) {
 			consts.Title,
 		},
 		{
-			"GetBooks: should pass(sorted by status",
+			"GetBooks: should pass(sorted by status)",
 			nil,
 			"",
 			getAllBooks,
@@ -110,13 +110,22 @@ func TestService(t *testing.T) {
 			"",
 			"",
 		},
-		//{
-		//	"GetBookByScope: should pass",
-		//	nil,
-		//	"banyanhill",
-		//	getBookByScope,
-		//	"",
-		//},
+		{
+			"GroupBooksByGenre: should fail(force read error)",
+			errors.New("GetAll query error:forced query error"),
+			"",
+			groupBooksByGenre,
+			"query-error",
+			"",
+		},
+		{
+			"GroupBooksByGenre: should pass",
+			nil,
+			"",
+			groupBooksByGenre,
+			"",
+			"",
+		},
 	}
 
 	for _, test := range tests {
@@ -134,8 +143,8 @@ func TestService(t *testing.T) {
 				_, err = bookService.ListBooks(test.sortKey)
 			case getBook:
 				_, err = bookService.GetBook(test.arg)
-				//case getBookByScope:
-				//	_, err = bookService.GetByScope(test.arg)
+			case groupBooksByGenre:
+				_, err = bookService.GroupBooksByGenre()
 			}
 
 			if err == nil && err != test.errorExpected {

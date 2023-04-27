@@ -2,10 +2,11 @@
 
 A golang based microservice that manages the reading activity of users that provides the below functionalities :
 - Add a book to the reading list
-- Update the book(Example: Set the status to IN PROGRESS, Bookmark a page)
+- Update the book(Example: Set the status to IN PROGRESS, Bookmark a page..etc)
 - List books(sorted by status or title)
 - Fetch a specific book
 - Delete the book(it is a soft delete - meaning the Front End would call the Update endpoint with active="false")
+- List Genres and the books associated with each genre
 
 ## Structure
 The structure of the project is following the architecture proposed by Robert C. Martin - [The Clean Architecture](https://blog.cleancoder.com/uncle-bob/2012/08/13/the-clean-architecture.html)
@@ -28,6 +29,7 @@ The layers proposed by this architecture are inside the internal folder:
         |-- webserver
             |-- probes
             |-- swagger
+|   |-- consts
 |   |-- entity
 |   |-- framework
         |-- database
@@ -276,7 +278,7 @@ curl --location 'http://localhost:9000/api/v1/book?sort=title'
     "code": 200,
     "status": "OK",
     "message": "books retrieval successful",
-    "count": 2,
+    "count": 8,
     "books": [
         {
             "isbn": "978-1-60309-527-3",
@@ -291,6 +293,36 @@ curl --location 'http://localhost:9000/api/v1/book?sort=title'
             "active": "true"
         },
         {
+            "isbn": "978-1-60309-084-1",
+            "title": "Does Something",
+            "author": "James Kochalka",
+            "genre": "Thriller",
+            "created": 1682596934,
+            "updated": 1682596934,
+            "created_by": "SYSTEM",
+            "updated_by": "SYSTEM"
+        },
+        {
+            "isbn": "978-1-60309-513-6",
+            "title": "Doughnuts and Doom",
+            "author": "Balazs Lorinczi",
+            "genre": "Mystery",
+            "created": 1682596959,
+            "updated": 1682596959,
+            "created_by": "SYSTEM",
+            "updated_by": "SYSTEM"
+        },
+        {
+            "isbn": "978-1-60309-038-4",
+            "title": "Essex County",
+            "author": "Jeff Lemire",
+            "genre": "Thriller",
+            "created": 1682596903,
+            "updated": 1682596903,
+            "created_by": "SYSTEM",
+            "updated_by": "SYSTEM"
+        },
+        {
             "isbn": "978-1-60309-469-6",
             "title": "From Hell",
             "author": "Eddie Campbell",
@@ -298,6 +330,36 @@ curl --location 'http://localhost:9000/api/v1/book?sort=title'
             "status": "IN PROGRESS",
             "updated": 1682588775,
             "active": "true"
+        },
+        {
+            "isbn": "978-1-60309-504-4",
+            "title": "Glork Patrol Takes a Bath",
+            "author": "James Kochalka",
+            "genre": "Mystery",
+            "created": 1682597000,
+            "updated": 1682597000,
+            "created_by": "SYSTEM",
+            "updated_by": "SYSTEM"
+        },
+        {
+            "isbn": "9978-1-60309-481-8",
+            "title": "Parenthesis",
+            "author": "Lodie Durand",
+            "genre": "Horror",
+            "created": 1682596881,
+            "updated": 1682596881,
+            "created_by": "SYSTEM",
+            "updated_by": "SYSTEM"
+        },
+        {
+            "isbn": "978-1-60309-329-3",
+            "title": "The Tempest",
+            "author": "Alan Moore",
+            "genre": "Mystery",
+            "created": 1682596978,
+            "updated": 1682596978,
+            "created_by": "SYSTEM",
+            "updated_by": "SYSTEM"
         }
     ]
 }
@@ -365,6 +427,121 @@ curl --location --request PUT 'http://localhost:9000/api/v1/book' \
     "message": "book updated successfully"
 }
 
+# Group Books By Genre - success scenario
+curl --location 'http://localhost:9000/api/v1/genre/'
+
+{
+    "code": 200,
+    "status": "OK",
+    "message": "books retrieval successful",
+    "genres": [
+        {
+            "genre": "Adventure",
+            "count": 1,
+            "books": [
+                {
+                    "isbn": "978-1-60309-527-3",
+                    "title": "But You Have Friends",
+                    "author": "Emilia McKenzie",
+                    "genre": "Adventure",
+                    "status": "FINISHED",
+                    "created": 1682585792,
+                    "updated": 1682588831,
+                    "created_by": "SYSTEM",
+                    "updated_by": "SYSTEM",
+                    "active": "true"
+                }
+            ]
+        },
+        {
+            "genre": "Horror",
+            "count": 2,
+            "books": [
+                {
+                    "isbn": "978-1-60309-469-6",
+                    "title": "From Hell",
+                    "author": "Eddie Campbell",
+                    "genre": "Horror",
+                    "status": "IN PROGRESS",
+                    "updated": 1682588775,
+                    "active": "true"
+                },
+                {
+                    "isbn": "9978-1-60309-481-8",
+                    "title": "Parenthesis",
+                    "author": "Lodie Durand",
+                    "genre": "Horror",
+                    "created": 1682596881,
+                    "updated": 1682596881,
+                    "created_by": "SYSTEM",
+                    "updated_by": "SYSTEM"
+                }
+            ]
+        },
+        {
+            "genre": "Mystery",
+            "count": 3,
+            "books": [
+                {
+                    "isbn": "978-1-60309-329-3",
+                    "title": "The Tempest",
+                    "author": "Alan Moore",
+                    "genre": "Mystery",
+                    "created": 1682596978,
+                    "updated": 1682596978,
+                    "created_by": "SYSTEM",
+                    "updated_by": "SYSTEM"
+                },
+                {
+                    "isbn": "978-1-60309-504-4",
+                    "title": "Glork Patrol Takes a Bath",
+                    "author": "James Kochalka",
+                    "genre": "Mystery",
+                    "created": 1682597000,
+                    "updated": 1682597000,
+                    "created_by": "SYSTEM",
+                    "updated_by": "SYSTEM"
+                },
+                {
+                    "isbn": "978-1-60309-513-6",
+                    "title": "Doughnuts and Doom",
+                    "author": "Balazs Lorinczi",
+                    "genre": "Mystery",
+                    "created": 1682596959,
+                    "updated": 1682596959,
+                    "created_by": "SYSTEM",
+                    "updated_by": "SYSTEM"
+                }
+            ]
+        },
+        {
+            "genre": "Thriller",
+            "count": 2,
+            "books": [
+                {
+                    "isbn": "978-1-60309-038-4",
+                    "title": "Essex County",
+                    "author": "Jeff Lemire",
+                    "genre": "Thriller",
+                    "created": 1682596903,
+                    "updated": 1682596903,
+                    "created_by": "SYSTEM",
+                    "updated_by": "SYSTEM"
+                },
+                {
+                    "isbn": "978-1-60309-084-1",
+                    "title": "Does Something",
+                    "author": "James Kochalka",
+                    "genre": "Thriller",
+                    "created": 1682596934,
+                    "updated": 1682596934,
+                    "created_by": "SYSTEM",
+                    "updated_by": "SYSTEM"
+                }
+            ]
+        }
+    ]
+}
 ```
 ## Known caveats
 * Swagger assets are included in the service. Moving that to a common module would be a sensible choice
@@ -377,12 +554,15 @@ curl --location --request PUT 'http://localhost:9000/api/v1/book' \
 * List endpoint is not paginated . It only returns a count . This could be modified to accept limit parameter to aid in pagination
 * Books cannot be exported to the pantry basket using this service since there is no equivalent library for Go
 * Environment Variable COUCHBASE_PASSWORD is set as plain text, this SHOULD be moved to a secret.
-* Sort is on ascending order. This could be driven by a query parameter. The sorting is done at the service rather than database queries(as sort queries can be a bit expensive) 
+* Sort is on ascending order. This could be driven by a query parameter. 
+* Sorting and Grouping(GroupBooksByGenre) are done at the service rather than database queries(as sort/multiple queries can be a bit expensive) 
 
-## Feature Improvements 
+## Additional Feature Improvements 
 * The data model has a field called "bookmark" which can be used to track the progress of the user. It can be set when calling the UPDATE endpoint. The user could be directly taken to the page when he/she selects the book from the UI.
 * The Front end can use the timestamps(start/end) returned from the LIST endpoint to show a dashboard / graph to the user showing weekly reading times,
+* The Front end can use the GroupBooksByGenre endpoint to show to the user , different genres and the books associated with each genre
 * The service supports multi tenancy by default by leveraging couchbase scopes and collections[Documentation here](https://docs.couchbase.com/server/current/learn/data/scopes-and-collections.html).So in the future reading lists for a family can be added without much code changes
+
 ## Couchbase Prerequisites
 * Create a bucket called `reading-list` in the couchbase cluster . [Refer here for more details](https://docs.couchbase.com/server/current/manage/manage-buckets/create-bucket.html)
 * Run the below queries in the couchbase server for the initial setup:

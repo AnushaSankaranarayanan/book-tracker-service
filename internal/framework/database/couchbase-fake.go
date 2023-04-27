@@ -96,7 +96,13 @@ func (fr *FakeResult) Next() bool {
 }
 
 // Row - override the original golang implementation
-func (fr *FakeResult) Row(_ interface{}) error {
+func (fr *FakeResult) Row(ptr interface{}) error {
+	book := entity.Book{
+		ISBN:  "isbn-1",
+		Title: "title-1",
+		Genre: "Horror",
+	}
+	*ptr.(*entity.Book) = book
 	return nil
 }
 

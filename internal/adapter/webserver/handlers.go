@@ -95,6 +95,17 @@ func (s *Server) UpdateBook(c *gin.Context) {
 	c.JSON(http.StatusOK, entity.NewGenericResponse(http.StatusOK, "book updated successfully"))
 }
 
+func (s *Server) GroupBooksByGenre(c *gin.Context) {
+	genres, err := s.Services.BookTracker.GroupBooksByGenre()
+	if err != nil {
+		l.Errorf("GetBooks error %s", err.Error())
+		c.JSON(http.StatusInternalServerError, entity.NewGenericResponse(http.StatusInternalServerError, "failed to get books.Refer to logs for more details"))
+		return
+	}
+
+	c.JSON(http.StatusOK, entity.NewGroupByGenreResponse(http.StatusOK, "books retrieval successful", genres))
+}
+
 func sortKeyValid(sortKey string) bool {
 	return sortKey == "" || strings.ToLower(sortKey) == consts.Title || strings.ToLower(sortKey) == consts.Status
 }

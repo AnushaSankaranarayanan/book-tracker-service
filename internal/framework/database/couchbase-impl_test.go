@@ -13,7 +13,6 @@ const (
 	upsertMethod            = "Upsert"
 	getMethod               = "Get"
 	getAllMethod            = "ListBooks"
-	getByScopeMethod        = "GetByScope"
 	newFakeCouchbaseStorage = "NewFakeCouchbaseStorage"
 	newCouchbaseStorage     = "NewCouchbaseStorage"
 )
@@ -85,33 +84,6 @@ func TestCouchbaseImpl(t *testing.T) {
 			errors.New("GetAll result close error:forced close error"),
 		},
 		{
-			"GetByScope: should pass",
-			"",
-			"ISBN-01",
-			getByScopeMethod,
-			nil,
-		},
-		{
-			"GetByScope: should fail (query-error)",
-			"query-error",
-			"ISBN-01",
-			getByScopeMethod,
-			errors.New("GetByScope query error:forced query error"),
-		},
-		{
-			"GetByScope: should fail (read-error)",
-			"read-error",
-			"ISBN-01",
-			getByScopeMethod,
-			errors.New("GetByScope result extract error:no result was available"),
-		}, {
-			"GetByScope: should fail (close-error)",
-			"close-error",
-			"ISBN-01",
-			getByScopeMethod,
-			errors.New("GetByScope result close error:forced close error"),
-		},
-		{
 			"NewFakeCouchbaseStorage: should pass",
 			"",
 			"",
@@ -139,8 +111,6 @@ func TestCouchbaseImpl(t *testing.T) {
 				_, err = mockCouchbase.Get(test.arg)
 			case getAllMethod:
 				_, err = mockCouchbase.GetAll()
-			case getByScopeMethod:
-				_, err = mockCouchbase.GetByScope(test.arg)
 			case newFakeCouchbaseStorage:
 				_, err = NewFakeCouchbaseStorage("")
 			case newCouchbaseStorage:

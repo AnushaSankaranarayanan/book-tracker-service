@@ -67,28 +67,3 @@ func (c *Couchbase) Upsert(key string, value interface{}) error {
 	}
 	return nil
 }
-
-// GetByScope - wrapper to get a book by scope
-func (c *Couchbase) GetByScope(scope string) (entity.Book, error) {
-	var book entity.Book
-
-	query := "select raw t from book t where t.`scope` = $1"
-
-	l.Tracef("Function GetByScope %s", query)
-	res, err := c.Bucket.Scope(defaultScope).Query(query, &gocb.QueryOptions{PositionalParameters: []interface{}{scope}})
-	if err != nil {
-		return book, fmt.Errorf("GetByScope query error:%s", err.Error())
-	}
-
-	err = res.One(&book)
-	if err != nil {
-		return book, fmt.Errorf("GetByScope result extract error:%s", err.Error())
-	}
-
-	if err = res.Close(); err != nil {
-		return book, fmt.Errorf("GetByScope result close error:%s", err.Error())
-	}
-
-	l.Tracef("Book retrieved from DB %+v", book)
-	return book, nil
-}

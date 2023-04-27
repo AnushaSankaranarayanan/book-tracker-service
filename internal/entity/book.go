@@ -30,5 +30,10 @@ func (b *Book) SetTrackingDetails() {
 	b.Updated = time.Now().Unix()
 	b.CreatedBy = defaultUser
 	b.UpdatedBy = defaultUser
-	b.Active = active
+}
+
+type BooksByGenre struct {
+	Genre string `json:"genre"`
+	Count int    `json:"count"`
+	Books []Book `json:"books"`
 }

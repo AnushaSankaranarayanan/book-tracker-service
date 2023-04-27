@@ -17,8 +17,8 @@ func (s *Server) Routes() error {
 		POST("/book", s.AddBook).
 		GET("/book/:id", s.GetBook).
 		GET("/book", s.ListBooks).
-		//HEAD("/book/scope/:scope", s.IsScopeExists).
-		PUT("/book", s.UpdateBook)
+		PUT("/book", s.UpdateBook).
+		GET("/genre", s.GroupBooksByGenre)
 
 	r.Group("/api/v1/probes").
 		GET("/liveness", probes.Liveness)

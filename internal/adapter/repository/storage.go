@@ -6,5 +6,4 @@ type Storage interface {
 	Upsert(string, interface{}) error
 	GetAll() ([]entity.Book, error)
 	Get(string) (*entity.Book, error)
-	GetByScope(string) (entity.Book, error)
 }

@@ -15,6 +15,11 @@ type BookResponse struct {
 	Books []Book `json:"books,omitempty"`
 }
 
+type GroupByGenreResponse struct {
+	GenericResponse
+	Genres []BooksByGenre `json:"genres"`
+}
+
 func NewGenericResponse(code int, msg string) GenericResponse {
 	return GenericResponse{Code: code, Status: http.StatusText(code), Message: msg}
 }
@@ -29,5 +34,15 @@ func NewBookResponse(code int, msg string, book *Book, books []Book) BookRespons
 		Book:  book,
 		Books: books,
 		Count: len(books),
+	}
+}
+func NewGroupByGenreResponse(code int, msg string, genres []BooksByGenre) GroupByGenreResponse {
+	return GroupByGenreResponse{
+		GenericResponse: GenericResponse{
+			Code:    code,
+			Status:  http.StatusText(code),
+			Message: msg,
+		},
+		Genres: genres,
 	}
 }

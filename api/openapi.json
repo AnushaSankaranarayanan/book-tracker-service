@@ -197,6 +197,33 @@
           }
         }
       }
+    },
+    "/bookservice/api/v1/genre": {
+      "get": {
+        "summary": "This API gets genres and book associated with each genre",
+        "responses": {
+          "200": {
+            "description": "Successful retrieval from database",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GroupBooksByGenreResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "internal server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SimpleResponse"
+                }
+              }
+            }
+          }
+        }
+      }
     }
   },
   "components": {
@@ -228,7 +255,7 @@
           },
           "status": {
             "type": "string",
-            "example": "IN-PROGRESS, UNREAD, COMPLETED"
+            "example": "IN PROGRESS, UNREAD, FINISHED"
           },
           "bookmark": {
             "description": "Page number which is bookmarked by the user",
@@ -267,6 +294,25 @@
             "description": "current status of the book. If the book would be deleted, this would be set to false in the DB",
             "type": "string",
             "example": "true"
+          }
+        }
+      },
+      "Genres": {
+        "type": "object",
+        "properties": {
+          "genre": {
+            "type": "string",
+            "example": "Adventure"
+          },
+          "count": {
+            "type": "number",
+            "example": "1"
+          },
+          "books": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Book"
+            }
           }
         }
       },
@@ -319,6 +365,27 @@
               },
               "count": {
                 "type": "number"
+              }
+            }
+          }
+        ]
+      },
+      "GroupBooksByGenreResponse": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/SimpleResponse"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "count": {
+                "type": "number"
+              },
+              "genres": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/Genres"
+                }
               }
             }
           }
