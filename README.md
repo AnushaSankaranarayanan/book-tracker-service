@@ -167,6 +167,31 @@ and issue requests
 /kube/clean-up.sh
 ```
 
+## Test/Coverage report
+```
+❯ make test
+=== RUN   TestHandlers
+--- PASS: TestHandlers (0.01s)
+
+=== RUN   TestServer
+--- PASS: TestServer (0.00s)
+PASS
+        github.com/anushasankaranarayanan/book-tracker-service/internal/adapter/webserver       coverage: 95.6% of statements
+ok      github.com/anushasankaranarayanan/book-tracker-service/internal/adapter/webserver       0.437s  coverage: 95.6% of statements
+=== RUN   TestProbes
+PASS
+        github.com/anushasankaranarayanan/book-tracker-service/internal/adapter/webserver/probes        coverage: 100.0% of statements
+ok      github.com/anushasankaranarayanan/book-tracker-service/internal/adapter/webserver/probes        0.564s  coverage: 100.0% of statements
+=== RUN   TestCouchbaseImpl
+PASS
+        github.com/anushasankaranarayanan/book-tracker-service/internal/framework/database      coverage: 94.1% of statements
+ok      github.com/anushasankaranarayanan/book-tracker-service/internal/framework/database      0.284s  coverage: 94.1% of statements
+=== RUN   TestService
+PASS
+        github.com/anushasankaranarayanan/book-tracker-service/internal/service coverage: 100.0% of statements
+ok      github.com/anushasankaranarayanan/book-tracker-service/internal/service 0.698s  coverage: 100.0% of statements
+
+```
 ## Sample responses
 ```
 # Liveness probe

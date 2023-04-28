@@ -14,7 +14,7 @@
   echo "\n-------------------------Preflight checks end -------------------------\n"
 
   #Installation section
-  echo "\n-------------------------Starting query aggregator deployment-------------------------\n"
+  echo "\n-------------------------Starting book tracker deployment-------------------------\n"
   echo "\nCreating service,deployment\n"
   kubectl create -f book-tracker-service.yaml
   sleep 10s

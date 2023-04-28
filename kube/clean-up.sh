@@ -1,5 +1,5 @@
 #! /bin/sh
-echo "\n-------------------------Deleting query aggregator deployments-------------------------\n"
+echo "\n-------------------------Deleting book tracker deployments-------------------------\n"
 echo "\n===================================================================================================\n"
 echo "\nRemoving service,deployment"
 kubectl delete -f book-tracker-service.yaml
